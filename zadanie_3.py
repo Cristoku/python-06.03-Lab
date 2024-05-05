@@ -1,27 +1,40 @@
-import faker
+def sex(pesel_list):
+    if pesel_list[-2] % 2 == 0:
+        return "female"
+    else:
+        return "male"
 
-print(pesel_num)
+def validate_pesel(pesel):
+    pesel_list = [int(i) for i in pesel]
 
-pesel = "19232448069" # lub input
-pesel = [int(number) for number in pesel]
-if pesel[2] == 4:
-    print("błedny pesel")
-year = pesel[0] * 10 + pesel[1]
-month = pesel[2] * 10 + pesel[3]
-if month < 20:
-    year += 1900
-else: # month > 20
-    year += 2000
-    month -= 20
-day = pesel[4] * 10 + pesel[5]
+    if len(pesel_list) != 11:
+        print("PESEL number must consist of 11 digits.")
+        exit()
 
-print("Data urodzenia to", day, month, year)
+    year = pesel[:2]
+    month = int(pesel[2:4])
 
-gender = "kobieta" if pesel[9]%2==0 else "mezczyzna"
-print("Plec to", gender)
+    if month >= 20:
+        month -= 20
+    else:
+        month = int(pesel[3])
 
+    day = pesel[4:6]
 
-from faker import Faker
-fake = Faker()
-for _ in range(5):
-    print(fake.pesel())
+    control_number = 0
+    weight = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3]
+
+    for i in range(len(weight)):
+        if (weight[i] * pesel_list[i]) > 9:
+            control_number += (weight[i] * pesel_list[i]) % 10
+        else:
+            control_number += (weight[i] * pesel_list[i])
+
+    control_number = 10 - (control_number % 10) if control_number > 9 else 10 - control_number
+
+    pesel_correct = control_number == pesel_list[-1]
+
+    print(f"Date of birth: {day}-{month}-{year} Gender: {sex(pesel_list)} PESEL correct: {pesel_correct}")
+
+pesel = input("Enter the PESEL number: ")
+validate_pesel(pesel)
